@@ -1,8 +1,7 @@
 import json
 print("Interface Status\n================================================================================\nDN                                                 Description           Speed    MTU  \n-------------------------------------------------- --------------------  ------  ------")
-json_list=open("C:\\Users\\ayan\\Desktop\\folder\\vscode\\python\\lab4\\jsonlab\\sample-json.json").read()
-json_load=json.loads(json_list)
-im_data=json_load["imdata"]
+json_list=json.loads(open("C:\\Users\\ayan\\Desktop\\folder\\vscode\\python\\lab4\\jsonlab\\sample-json.json").read())
+im_data=json_list["imdata"]
 for i in im_data:
     dn=i["l1PhysIf"]["attributes"]["dn"]
     #id=i["l1PhysIf"]["attributes"]["id"]
