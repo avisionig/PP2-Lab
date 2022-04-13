@@ -38,7 +38,7 @@ class Enemy(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (random.randint(40, SCREEN_WIDTH - 40), 0)
 
-    def update(self):
+    def update(self):#создает "нового" врага когда он переходит границы
         self.rect.move_ip(0, ENEMTY_STEP)
         if(self.rect.bottom > SCREEN_HEIGHT):
             self.top = 0
@@ -55,7 +55,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (160, 520)
 
-    def update(self):
+    def update(self):#движение нашей машины
         pressed_keys = pygame.key.get_pressed()
         if self.rect.left > 0:
             if pressed_keys[pygame.K_LEFT]:
@@ -76,13 +76,13 @@ class Coin(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (random.randint(40, SCREEN_WIDTH - 40), 0)
 
-    def update(self):
+    def update(self):#если монета переходит границы, дает ей новую позицию сверху("создает новую")
         self.rect.move_ip(0, 5)
         if(self.rect.bottom > SCREEN_HEIGHT):
             self.top = 0
             self.rect.center = (random.randint(30, 350), 0)
     
-    def spawn(self):
+    def spawn(self):#дает случайную позицю сверху
         self.rect.center = (random.randint(30, 350), 0)
     
     def draw(self, surface):
@@ -107,17 +107,17 @@ while True:
     E1.update()
     
 
-    if pygame.sprite.spritecollideany(P1, enemies):
+    if pygame.sprite.spritecollideany(P1, enemies):#если игрок коснется врага
         pygame.mixer.music.load('sounds/crash.wav')
         pygame.mixer.music.play()
         time.sleep(3)
         pygame.quit()
         sys.exit()
 
-    if pygame.sprite.spritecollideany(P1, coin):
+    if pygame.sprite.spritecollideany(P1, coin):#если игрок коснется монету 
         SCORE+=1
         ENEMTY_STEP += 0.5
-        C1.spawn()
+        C1.spawn()#задает новую позицию
     
     SURF.blit(bg, (0, 0))
 

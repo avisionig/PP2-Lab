@@ -29,7 +29,7 @@ pygame.mixer.music.play(-1)
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 
 class Background:
-    def draw(self, surface):
+    def draw(self, surface):# цвет фона и создает клетки
         surface.fill(GREEN)
         for i in range(0, WINDOW_WIDTH, BLOCK_SIZE):
             for j in range(0, WINDOW_HEIGHT, BLOCK_SIZE):
@@ -40,7 +40,7 @@ class Food:
         self.color=RED
         self.spawn()
      
-    def spawn(self):
+    def spawn(self):# позиция еды в любой позици
         self.posx = random.randrange(0, WINDOW_WIDTH, BLOCK_SIZE)
         self.posy = random.randrange(0,WINDOW_HEIGHT, BLOCK_SIZE)
     
@@ -56,7 +56,7 @@ class Snake:
         self.state = "STOP"
         self.body = []
     
-    def move(self):
+    def move(self):#двигает голову змейки по одной клетке
         if self.state == "UP":
             self.heady -= BLOCK_SIZE
         elif self.state == "DOWN":
@@ -72,7 +72,7 @@ class Snake:
             for body_i in self.body:
                 body_i.draw(surface)
 
-    def move_body(self):
+    def move_body(self):# дает каждой последующей части змейки позицию в которой была голова или предстоящяя часть тела
         if len(self.body)>0:
             for i in range(len(self.body)-1, -1, -1):
                 if i == 0:
@@ -110,7 +110,7 @@ class Wall:
     self.body = []
     self.load_wall()
   
-  def load_wall(self, level=1):
+  def load_wall(self, level=1):# загружает новые стены
     with open(f'level{level}.txt', 'r') as f:
       wall_body = f.readlines()
     
@@ -119,7 +119,7 @@ class Wall:
         if value == '#':
           self.body.append([j, i])
 
-  def null_walls(self):
+  def null_walls(self):# обнуляет стены в случае смерти и если вы перешли на новый уровень
       self.body=0
       self.body=[]
 
@@ -129,23 +129,23 @@ class Wall:
 
 class Collision:
 
-    def food_and_snake(self, snake, food):
+    def food_and_snake(self, snake, food):#соприкасние еды и змейки
         dist = math.sqrt( math.pow( (snake.headx - food.posx), 2 ) + math.pow( (snake.heady - food.posy), 2 ) ) 
         return dist < BLOCK_SIZE
 
-    def snake_and_borders(self, snake):
+    def snake_and_borders(self, snake):#если змейка ударяется об границу
         if snake.headx < 0 or snake.headx > WINDOW_WIDTH - BLOCK_SIZE or snake.heady < 0 or snake.heady > WINDOW_HEIGHT - BLOCK_SIZE:
             return True
         return False
 
-    def head_and_body(self, snake):
+    def head_and_body(self, snake):# если змейка ударяется об себя
         for body_i in snake.body:
              dist = math.sqrt( math.pow( (snake.headx - body_i.posx), 2 ) + math.pow( (snake.heady - body_i.posy), 2 ) )
              if dist < BLOCK_SIZE :
                  return True
         return False
 
-    def snake_and_walls(self, snake, walls):
+    def snake_and_walls(self, snake, walls):# если змейка удареятся об себя
         for x,y in walls.body:
             dist = math.sqrt( math.pow( ( (x * BLOCK_SIZE) - snake.headx), 2 ) + math.pow( ( (y * BLOCK_SIZE) - snake.heady), 2 ) ) 
             if dist < BLOCK_SIZE:
@@ -153,7 +153,7 @@ class Collision:
         return False
 
 
-    def food_and_walls(self, walls, food):
+    def food_and_walls(self, walls, food):# чтобы еда не появлялась внутри стены по случайности
         for x,y in walls.body:
             dist = math.sqrt( math.pow( ((x * BLOCK_SIZE) - food.posx), 2 ) + math.pow( ((y * BLOCK_SIZE) - food.posy), 2 ) ) 
             if dist < BLOCK_SIZE:
@@ -194,7 +194,7 @@ while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
                 sys.exit()
-        if event.type == pygame.KEYDOWN:
+        if event.type == pygame.KEYDOWN:#движение змеи и условия чтобы она не проходила через себя
             if event.key == pygame.K_UP and snake.state!="DOWN":
                 snake.state = "UP"
             if event.key == pygame.K_DOWN and snake.state!="UP":
@@ -209,7 +209,7 @@ while True:
         food.spawn()
         time1 = 60
 
-        #snake eats food 
+        #змейка кушает еду(приятного аппетита)
     if collision.food_and_snake(snake, food):
         food.spawn()
         i = random.randint(1 , 2)
@@ -217,10 +217,10 @@ while True:
         score.increase(i)
         time1 = 60
         
-    if collision.food_and_walls(walls, food):
+    if collision.food_and_walls(walls, food):#если еда появляетс в стене
         food.spawn()
         
-    if collision.snake_and_walls(snake, walls):
+    if collision.snake_and_walls(snake, walls):# удар змейки об стену 
         snake.lose()
         food.spawn()
         score.reset()
@@ -228,11 +228,12 @@ while True:
         walls.load_wall(level=1)
         time1 = 60
 
-        #movement of snake
+        #движение змейки головы и тела
     if snake.state != "STOP":
         snake.move_body()
         snake.move()
 
+    #остальное понятно
     if collision.snake_and_borders(snake):
         snake.lose()
         food.spawn()
