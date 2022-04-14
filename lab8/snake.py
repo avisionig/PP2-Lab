@@ -22,7 +22,7 @@ clock = pygame.time.Clock()
 FPS = 8
 time1 = 60
 
-pygame.mixer.music.load('music.mp3')
+pygame.mixer.music.load('sounds/music.mp3')
 pygame.mixer.music.play(-1)
 
 

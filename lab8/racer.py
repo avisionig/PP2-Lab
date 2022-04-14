@@ -110,6 +110,9 @@ while True:
     if pygame.sprite.spritecollideany(P1, enemies):#если игрок коснется врага
         pygame.mixer.music.load('sounds/crash.wav')
         pygame.mixer.music.play()
+
+        SURF.blit(wasted,(0,0))
+        pygame.display.update()
         time.sleep(3)
         pygame.quit()
         sys.exit()
