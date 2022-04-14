@@ -40,34 +40,34 @@ def eraser(pos, RAD):
 def square(color, pos, width, height):
     pygame.draw.rect(screen, color, (pos[0], pos[1], width, height), 4)
 
-def r_triangle(color, z,x): #на тетради рисуем график прямоугольного треугольника, и оттуда выводим формулу для 
-    x1=z[0]                 #самого треугольника
-    x2=x[0]                 
-    y1=z[1]
-    y2=x[1]
-    pygame.draw.line(screen,color,z,x,2)
+def r_triangle(color, start_pos,end_pos): #на тетради рисуем график прямоугольного треугольника, и оттуда выводим формулу для 
+    x1=start_pos[0]                 #самого треугольника
+    x2=end_pos[0]                 
+    y1=start_pos[1]
+    y2=end_pos[1]
+    pygame.draw.line(screen,color,start_pos,end_pos,2)
     pygame.draw.line(screen,color,(x1,y1),(x1,y2),2)
     pygame.draw.line(screen,color,(x1,y2),(x2,y2),2)
 
 
-def romb(color, z,x):    #для ромба формулы нету к сожалению, методом подбора +- правильную величину вычисляем
-    x1=z[0]
-    x2=x[0]
+def romb(color, start_pos ,end_pos):    #для ромба формулы нету к сожалению, методом подбора +- правильную величину вычисляем
+    x1=start_pos[0]
+    x2=end_pos[0]
     delta=(abs(x1-x2)//2)//sqrt(3)
-    y1=z[1]
-    y2=x[1]
+    y1=start_pos[1]
+    y2=end_pos[1]
     pygame.draw.line(screen,color,(x1,y1),(x1-(delta),y2),2)
     pygame.draw.line(screen,color,(x1-(delta),y2),(x2-(delta),y2),2)
     pygame.draw.line(screen,color,(x1,y1),(x2,y1),2)
     pygame.draw.line(screen,color,(x2-(delta),y2),(x2,y1),2)
 
 
-def e_triangle(color,z,x):               #так же произошли трудности с правильным треугольником, +- вывел формулу и подставил  в pygame.draw.line
-    x1=z[0]
-    x2=x[0]
-    y1=z[1]
-    y2=x[1]
-    pygame.draw.line(screen,color,z,x,2)
+def e_triangle(color,start_pos,end_pos):#так же произошли трудности с правильным треугольником, +- вывел формулу и подставил  в pygame.draw.line
+    x1=start_pos[0]
+    x2=end_pos[0]
+    y1=start_pos[1]
+    y2=end_pos[1]
+    pygame.draw.line(screen,color,start_pos,end_pos,2)
     deltax=abs(x2-x1)
     deltay=abs(y2-y1)
     x4=(deltax+x1)
@@ -75,8 +75,8 @@ def e_triangle(color,z,x):               #так же произошли тру�
     
     y4+=deltax
 
-    pygame.draw.line(screen,color,(x4,y4),x,2)
-    pygame.draw.line(screen,color,z,(x4,y4),2)
+    pygame.draw.line(screen,color,(x4,y4),end_pos,2)
+    pygame.draw.line(screen,color,start_pos,(x4,y4),2)
 RAD = 30
 
 
