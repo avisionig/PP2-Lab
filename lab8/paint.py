@@ -25,6 +25,8 @@ drawing = False
 
 color = BLACK
 
+prev,cur = None, None
+
 #функция для каждой фигуры:
 def drawRect(color, pos, width, height):  
     pygame.draw.rect(screen, color, (pos[0], pos[1], width, height), 4) 
@@ -116,22 +118,32 @@ while not finished:
             rect_x = abs(start_pos[0] - end_pos[0])#разница х
             rect_y = abs(start_pos[1] - end_pos[1])#разница у
             
-            if mode == 0:                              #выбор режима
+            if mode == 1:                              #выбор режима
                 drawRect(color, start_pos, rect_x, rect_y)
-            elif mode == 1:
+            elif mode == 3:
                 drawCircle(color, start_pos, rect_x)
-            elif mode==3:
+            elif mode==4:
                 if rect_x<rect_y:rect_x=rect_y
                 square(color, start_pos, rect_x, rect_x)
-            elif mode==4:
-                r_triangle(color, start_pos,end_pos)
             elif mode==5:
-                e_triangle(color, start_pos,end_pos)
+                r_triangle(color, start_pos,end_pos)
             elif mode==6:
+                e_triangle(color, start_pos,end_pos)
+            elif mode==7:
                 romb(color, start_pos,end_pos)
         if event.type == pygame.MOUSEMOTION and drawing:  #стерка 
             if mode == 2:
                 eraser(pos, RAD)
+        
+        if event.type == pygame.MOUSEBUTTONDOWN and mode == 0:
+            prev = pygame.mouse.get_pos()
+        if event.type == pygame.MOUSEMOTION and mode == 0 :
+            cur = pygame.mouse.get_pos()
+            if prev:
+                pygame.draw.line(screen, color, prev, cur, 1)
+                prev = cur
+        if event.type == pygame.MOUSEBUTTONUP:
+            prev = None
         
         if event.type == pygame.KEYDOWN:               #при нажатий на space мы будем переходить на следующий мод
             if event.key == pygame.K_SPACE:             #и если мы на 6 моде нажмем еще раз на пробел, то нас перекинет на 1 мод(0)
