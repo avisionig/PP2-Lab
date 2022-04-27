@@ -2,9 +2,41 @@ import pygame
 import random
 import math
 import sys
+import psycopg2
+import time
 
 pygame.init()
 
+name = input()
+conn = psycopg2.connect("dbname=postgres user=postgres password=1994almaZ_")
+cursor = conn.cursor()
+cursor.execute("SELECT * FROM snake LIMIT 10")
+table = cursor.fetchall()
+conn.commit()
+
+record = 0
+new = True
+to_posx = 0
+to_posy = 0
+to_score = 0 
+uploaded = False
+
+for row in table:
+    if row[0] == name:
+        to_score = row[1]
+        record = row[2]
+        new = False
+        to_posx = row[3]
+        to_posy = row[4]
+        break
+
+
+
+if new:
+    postgre_query = """INSERT INTO snake(user_name,user_score, user_record, user_posx, user_posy ) VALUES (%s, %s ,%s, %s,%s) """
+    cursor.execute(postgre_query, (name, 0, 0, 0, 0))
+    conn.commit()
+  
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 WHITE_2 = (100, 100, 100)
@@ -18,11 +50,11 @@ WINDOW_WIDTH, WINDOW_HEIGHT = 500, 500  # Surface
 BLOCK_SIZE = 25
 
 clock = pygame.time.Clock()
-FPS = 4
+FPS = 5
 time1 = 60
 
-pygame.mixer.music.load('sounds/music.mp3')
-pygame.mixer.music.play(-1)
+"""pygame.mixer.music.load('sounds/music.mp3')
+pygame.mixer.music.play(-1)"""
 
 
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
@@ -92,7 +124,12 @@ class Snake:
         self.heady = random.randrange(0, WINDOW_HEIGHT, BLOCK_SIZE)
         self.body = []
         self.state = "STOP"
-
+    
+    def saved(self, posx, posy):
+        self.headx = posx
+        self.heady = posy
+        self.body = []
+        self.state = "STOP"
 
 class Body:
     def __init__(self, color, posx, posy):
@@ -175,6 +212,10 @@ class Score:
 		lbl = self.font.render('Score: ' + str(self.points), 1, BLACK)
 		surface.blit(lbl, (5,5))
 
+def draw_record(surface, record):
+    font = pygame.font.SysFont(None, 30, bold=False)
+    lbl = font.render('Record: ' + str(record), 1, BLACK)
+    surface.blit(lbl, (5, 20))
 
 bg=Background()
 food=Food()
@@ -184,11 +225,13 @@ score = Score()
 walls=Wall()
 
 while True:
+
     bg.draw(screen)
     food.draw(screen)
     snake.draw(screen)
     score.draw(screen)
     walls.draw(screen)
+    draw_record(screen, record)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -204,6 +247,24 @@ while True:
                 snake.state = "LEFT" 
             if event.key == pygame.K_p:
                 snake.state = "STOP"
+            if event.key == pygame.K_s:
+                print (snake.headx, snake.heady)
+                postgre_query = """UPDATE snake SET user_posx = %s, user_posy = %s , user_score = %s WHERE user_name=%s """
+                cursor.execute(postgre_query,(str(snake.headx), str(snake.heady), str(score.points) , name ))
+                conn.commit()
+            if event.key == pygame.K_u:
+                snake.saved(int(to_posx), int(to_posy))
+                uploaded = True
+                score.points = int(to_score)
+                walls.null_walls()
+                walls.load_wall(level=1)
+                
+
+    if uploaded == True and snake.state != "STOP":
+        time.sleep(1) 
+        snake.add_body(int(to_score))
+        uploaded = False
+
     if time1<=0:
         food.spawn()
         time1 = 60
@@ -215,6 +276,10 @@ while True:
         snake.add_body(i)
         score.increase(i)
         time1 = 60
+    
+    if score.points > int(record):
+        record = score.points
+        record = str(record)
         
     if collision.food_and_walls(walls, food):#если еда появляетс в стене
         food.spawn()
@@ -231,6 +296,13 @@ while True:
     if snake.state != "STOP":
         snake.move_body()
         snake.move()
+    
+    if snake.state == "STOP":
+        postgre_query = """UPDATE snake SET user_record = %s WHERE user_name=%s  """
+        cursor.execute(postgre_query, ( record, name ))
+        conn.commit()
+    
+
 
     #остальное понятно
     if collision.snake_and_borders(snake):
@@ -255,3 +327,8 @@ while True:
     time1 -= 1
     clock.tick(FPS)
     pygame.display.update()
+postgre_query = """UPDATE snake SET user_record = %s WHERE user_name=%s  """
+cursor.execute(postgre_query, ( record, name ))
+conn.commit()
+cursor.close()
+conn.close()
