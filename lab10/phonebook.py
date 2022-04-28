@@ -9,6 +9,13 @@ def add_user():
     conn.commit()
     print("Data added!")
 
+def fetch_users():
+    cursor.execute("SELECT * FROM phonebook ")
+    table = cursor.fetchall()
+    for row in table:
+        c = row[0] + " " + row[1]
+        print(c)
+
 def update():
     print("Type who's number you want to change")
     name = input()
@@ -19,7 +26,15 @@ def update():
     
     conn.commit()
     print("Data updated!")
-
+def find():
+    print("Insert name who's number you want to see")
+    name = input()
+    cursor.execute("SELECT * FROM phonebook ")
+    table = cursor.fetchall()
+    for row in table:
+        if name == row[0]:
+            c = row[0] + " " + row[1]
+            print(c)
 def delete_user():
     print("Insert name you want to delete")
     name = input()
@@ -34,7 +49,7 @@ try:
     cursor = conn.cursor()
 
     while not cond:
-        print("\nChoose action:\n1.Add user and number\n2.Change number of existing user\n3.Delete user\n4.Exit")
+        print("\nChoose action:\n1.Add user and number\n2.Change number of existing user\n3.Delete user\n4.Find number by name\n5.Show all names and numbers\n6.Exit")
         action=input()
         if action == '1':
             print("Insert data")
@@ -44,6 +59,10 @@ try:
         elif action == '3':
             delete_user()
         elif action == '4':
+            find() 
+        elif action == '5':
+            fetch_users()
+        elif action == '6':
             cond = True 
 
 except psycopg2.Error as e:

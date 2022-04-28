@@ -235,6 +235,11 @@ while True:
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+                postgre_query = """UPDATE snake SET user_record = %s WHERE user_name=%s  """
+                cursor.execute(postgre_query, ( record, name ))
+                conn.commit()
+                cursor.close()
+                conn.close()
                 sys.exit()
         if event.type == pygame.KEYDOWN:#движение змеи и условия чтобы она не проходила через себя
             if event.key == pygame.K_UP and snake.state!="DOWN":
@@ -327,8 +332,3 @@ while True:
     time1 -= 1
     clock.tick(FPS)
     pygame.display.update()
-postgre_query = """UPDATE snake SET user_record = %s WHERE user_name=%s  """
-cursor.execute(postgre_query, ( record, name ))
-conn.commit()
-cursor.close()
-conn.close()
