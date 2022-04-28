@@ -20,6 +20,11 @@ to_posx = 0
 to_posy = 0
 to_score = 0 
 uploaded = False
+glob_rec = 0
+
+for row in table: 
+    if int(row[2]) > int(glob_rec):
+        glob_rec = row[2] 
 
 for row in table:
     if row[0] == name:
@@ -215,7 +220,9 @@ class Score:
 def draw_record(surface, record):
     font = pygame.font.SysFont(None, 30, bold=False)
     lbl = font.render('Record: ' + str(record), 1, BLACK)
-    surface.blit(lbl, (5, 20))
+    lbl_1 = font.render('MAX record: ' + str(glob_rec), 1, BLACK)
+    surface.blit(lbl, (5, 25))
+    surface.blit(lbl_1, (5, 40))
 
 bg=Background()
 food=Food()
@@ -285,6 +292,8 @@ while True:
     if score.points > int(record):
         record = score.points
         record = str(record)
+    if int(record) > int(glob_rec):
+        glob_rec = record
         
     if collision.food_and_walls(walls, food):#если еда появляетс в стене
         food.spawn()
