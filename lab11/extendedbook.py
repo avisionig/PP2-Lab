@@ -12,58 +12,33 @@ def add_user():
     
     cursor.execute("SELECT * FROM phonebook ")
     table = cursor.fetchall()
-    if n == 1:
+    while n >= 1:
         add = input().split()
-        name, number = add[0], add[1]
+        n -= 1
         correct_number = False
-        for i in number:
+        for i in add[1]:
             if i >= '0' and i <= '9':
                 correct_number = True
             else:
                 correct_number = False
-                uncorrect.append(add)
                 break
-        for row in table: 
-            if name == row[0] and correct_number == True :
+        if correct_number == False :
+            uncorrect.append(add)
+        flag_mult = True
+        for row in table:
+            if add[0] == row[0] and correct_number == True:
                 postgre_query = """UPDATE phonebook SET phonenumber = %s WHERE user_name = %s """
-                cursor.execute(postgre_query, (number, name))
+                cursor.execute(postgre_query, (add[1], add[0]))
                 conn.commit()
-                flag = False
+                flag_mult = False
+                updated.append(add)
                 add_flag = True
-        if flag and correct_number == True:
+        if flag_mult and correct_number == True:
             data_toinsert = (add[0], add[1])
             postgre_query = """INSERT INTO phonebook( user_name, phonenumber) VALUES (%s, %s) """
             cursor.execute(postgre_query, data_toinsert)
             conn.commit()
             add_flag = True
-    elif n > 1:
-        while n >= 1:
-            add = input().split()
-            n -= 1
-            correct_number = False
-            for i in add[1]:
-                if i >= '0' and i <= '9':
-                    correct_number = True
-                else:
-                    correct_number = False
-                    break
-            if correct_number == False :
-                uncorrect.append(add)
-            flag_mult = True
-            for row in table:
-                if add[0] == row[0] and correct_number == True:
-                    postgre_query = """UPDATE phonebook SET phonenumber = %s WHERE user_name = %s """
-                    cursor.execute(postgre_query, (add[1], add[0]))
-                    conn.commit()
-                    flag_mult = False
-                    updated.append(add)
-                    add_flag = True
-            if flag_mult and correct_number == True:
-                data_toinsert = (add[0], add[1])
-                postgre_query = """INSERT INTO phonebook( user_name, phonenumber) VALUES (%s, %s) """
-                cursor.execute(postgre_query, data_toinsert)
-                conn.commit()
-                add_flag = True
     if len(updated) > 0:
         print('\nUpdated numbers')
         for i in updated:
